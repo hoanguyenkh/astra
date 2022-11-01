@@ -177,6 +177,17 @@ all: build
 
 build-all: tools build lint test
 
+build-e2e-chain-init:
+	mkdir -p $(BUILDDIR)
+	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./tests/e2e/chain_init
+
+docker-build-debug:
+	@docker build -t astra:debug --build-arg BASE_IMG_TAG=debug -f Dockerfile .
+
+docker-build-e2e-chain-init:
+	@docker build -t evmos-e2e-chain-init:debug -f tests/e2e/chain_init/Dockerfile .
+
+
 .PHONY: distclean clean build-all
 
 ###############################################################################

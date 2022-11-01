@@ -2,7 +2,7 @@ FROM golang:stretch AS build-env
 
 WORKDIR /go/src/github.com/AstraProtocol/astra
 
-RUN apt update
+RUN apt update -y
 RUN apt install git -y
 
 COPY . .
@@ -11,7 +11,7 @@ RUN make build
 
 FROM golang:stretch
 
-RUN apt update
+RUN apt update -y
 RUN apt install ca-certificates jq -y
 
 WORKDIR /root
