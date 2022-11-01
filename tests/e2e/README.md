@@ -64,7 +64,7 @@ In `e2e_suite_test.go#L114` update the validator version tag:
 				fmt.Sprintf("%s/:/astra/.astrad", val.ConfigDir),
 			},
 			Repository: "tharsishq/astra",
-			Tag:        "v3.0.2",  // <-------------------- Upgrade this tag to reflect pre upgrade version
+			Tag:        "v2.1.2",  // <-------------------- Upgrade this tag to reflect pre upgrade version
 			Cmd: []string{
 				"/usr/bin/astrad",
 				"start",

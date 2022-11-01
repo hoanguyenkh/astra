@@ -57,7 +57,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	// The e2e test flow is as follows:
 	//
-	// 1. Configure evmos chain with two validators
+	// 1. Configure astra chain with two validators
 	//   * Initialize configs and genesis for all validators.
 	// 2. Start the networks.
 	// 3. Upgrade the network
@@ -80,7 +80,7 @@ func (s *IntegrationTestSuite) configureDockerResources(chainIDOne, chainIDTwo s
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
-	if str := os.Getenv("EVMOS_E2E_SKIP_CLEANUP"); len(str) > 0 {
+	if str := os.Getenv("ASTRA_E2E_SKIP_CLEANUP"); len(str) > 0 {
 		skipCleanup, err := strconv.ParseBool(str)
 		s.Require().NoError(err)
 
@@ -109,22 +109,22 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 }
 
 func (s *IntegrationTestSuite) runValidators(c *chain.Chain, portOffset int) {
-	s.T().Logf("starting Evmos %s validator containers...", c.ChainMeta.ID)
+	s.T().Logf("starting Astra %s validator containers...", c.ChainMeta.ID)
 	s.valResources[c.ChainMeta.ID] = make([]*dockertest.Resource, len(c.Validators))
 	for i, val := range c.Validators {
 		runOpts := &dockertest.RunOptions{
 			Name:      val.Name,
 			NetworkID: s.dkrNet.Network.ID,
 			Mounts: []string{
-				fmt.Sprintf("%s/:/evmos/.evmosd", val.ConfigDir),
+				fmt.Sprintf("%s/:/astra/.astrad", val.ConfigDir),
 			},
-			Repository: "tharsishq/evmos",
-			Tag:        "v8.2.3",
+			Repository: "AstraProtocol/astra",
+			Tag:        "v2.1.2",
 			Cmd: []string{
-				"/usr/bin/evmosd",
+				"/usr/bin/astrad",
 				"start",
 				"--home",
-				"/evmos/.evmosd",
+				"/astra/.astrad",
 			},
 		}
 
@@ -148,7 +148,7 @@ func (s *IntegrationTestSuite) runValidators(c *chain.Chain, portOffset int) {
 		s.Require().NoError(err)
 
 		s.valResources[c.ChainMeta.ID][i] = resource
-		s.T().Logf("started Evmos %s validator container: %s", c.ChainMeta.ID, resource.Container.ID)
+		s.T().Logf("started Astra %s validator container: %s", c.ChainMeta.ID, resource.Container.ID)
 	}
 
 	rpcClient, err := rpchttp.New("tcp://localhost:26657", "/websocket")
@@ -173,7 +173,7 @@ func (s *IntegrationTestSuite) runValidators(c *chain.Chain, portOffset int) {
 		},
 		5*time.Minute,
 		time.Second,
-		"Evmos node failed to produce blocks",
+		"Astra node failed to produce blocks",
 	)
 }
 
@@ -183,7 +183,7 @@ func (s *IntegrationTestSuite) configureChain(chainId string) {
 	user := fmt.Sprintf("%d%s%d", uid, ":", uid)
 
 	s.T().Logf("starting e2e infrastructure for chain-id: %s", chainId)
-	tmpDir, err := ioutil.TempDir("", "evmos-e2e-testnet-")
+	tmpDir, err := ioutil.TempDir("", "astra-e2e-testnet-")
 
 	s.T().Logf("temp directory for chain-id %v: %v", chainId, tmpDir)
 	s.Require().NoError(err)
@@ -280,25 +280,25 @@ func (s *IntegrationTestSuite) upgrade() {
 	for i, val := range chain.Validators {
 		runOpts := &dockertest.RunOptions{
 			Name:       val.Name,
-			Repository: "evmos",
+			Repository: "astra",
 			Tag:        "debug",
 			NetworkID:  s.dkrNet.Network.ID,
 			User:       "root:root",
 			Mounts: []string{
-				fmt.Sprintf("%s/:/evmos/.evmosd", val.ConfigDir),
+				fmt.Sprintf("%s/:/astra/.astrad", val.ConfigDir),
 			},
 			Cmd: []string{
-				"/usr/bin/evmosd",
+				"/usr/bin/astrad",
 				"start",
 				"--home",
-				"/evmos/.evmosd",
+				"/astra/.astrad",
 			},
 		}
 		resource, err := s.dkrPool.RunWithOptions(runOpts, noRestart)
 		s.Require().NoError(err)
 
 		s.valResources[chain.ChainMeta.ID][i] = resource
-		s.T().Logf("started Evmos upgraded %s validator container: %s", chain.ChainMeta.ID, resource.Container.ID)
+		s.T().Logf("started Astra upgraded %s validator container: %s", chain.ChainMeta.ID, resource.Container.ID)
 	}
 
 	// check that we are hitting blocks again
@@ -342,12 +342,12 @@ func (s *IntegrationTestSuite) replaceContainers() {
 	for i, val := range chain.Validators {
 		runOpts := &dockertest.RunOptions{
 			Name:       val.Name,
-			Repository: "evmos",
+			Repository: "astra",
 			Tag:        "debug",
 			NetworkID:  s.dkrNet.Network.ID,
 			User:       "root:root",
 			Mounts: []string{
-				fmt.Sprintf("%s/:/evmos/.evmosd", val.ConfigDir),
+				fmt.Sprintf("%s/:/astra/.astrad", val.ConfigDir),
 			},
 			Cmd: []string{
 				"tail", "-f", "/dev/null",
@@ -357,6 +357,6 @@ func (s *IntegrationTestSuite) replaceContainers() {
 		s.Require().NoError(err)
 
 		s.valResources[chain.ChainMeta.ID][i] = resource
-		s.T().Logf("started Evmos upgraded %s validator container: %s", chain.ChainMeta.ID, resource.Container.ID)
+		s.T().Logf("started Astra upgraded %s validator container: %s", chain.ChainMeta.ID, resource.Container.ID)
 	}
 }

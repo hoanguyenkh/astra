@@ -123,13 +123,13 @@ func (s *IntegrationTestSuite) submitProposal(c *chain.Chain) {
 		Container:    s.valResources[c.ChainMeta.ID][0].Container.ID,
 		User:         "root",
 		Cmd: []string{
-			"/usr/bin/evmosd",
+			"/usr/bin/astrad",
 			"--home",
-			"/evmos/.evmosd",
+			"/astra/.astrad",
 			"tx", "gov", "submit-proposal",
-			"software-upgrade", "v9.0.0",
-			"--title=\"v9.0.0\"",
-			"--description=\"v9 upgrade proposal\"",
+			"software-upgrade", "v2.1.2",
+			"--title=\"v2.1.2\"",
+			"--description=\"v2 upgrade proposal\"",
 			"--upgrade-height=75",
 			"--upgrade-info=\"\"",
 			fmt.Sprintf("--chain-id=%s", c.ChainMeta.ID),
@@ -177,10 +177,10 @@ func (s *IntegrationTestSuite) depositProposal(c *chain.Chain) {
 		Container:    s.valResources[c.ChainMeta.ID][0].Container.ID,
 		User:         "root",
 		Cmd: []string{
-			"/usr/bin/evmosd",
+			"/usr/bin/astrad",
 			"--home",
-			"/evmos/.evmosd",
-			"tx", "gov", "deposit", "1", "10000000aevmos", "--from=val", fmt.Sprintf("--chain-id=%s", c.ChainMeta.ID), "-b=block", "--yes", "--keyring-backend=test",
+			"/astra/.astrad",
+			"tx", "gov", "deposit", "1", "10000000aastra", "--from=val", fmt.Sprintf("--chain-id=%s", c.ChainMeta.ID), "-b=block", "--yes", "--keyring-backend=test",
 		},
 	})
 	s.Require().NoError(err)
@@ -224,9 +224,9 @@ func (s *IntegrationTestSuite) voteProposal(c *chain.Chain) {
 			Container:    s.valResources[c.ChainMeta.ID][i].Container.ID,
 			User:         "root",
 			Cmd: []string{
-				"/usr/bin/evmosd",
+				"/usr/bin/astrad",
 				"--home",
-				"/evmos/.evmosd",
+				"/astra/.astrad",
 				"tx", "gov", "vote", "1", "yes", "--from=val", fmt.Sprintf("--chain-id=%s", c.ChainMeta.ID), "-b=block", "--yes", "--keyring-backend=test",
 			},
 		})
@@ -271,10 +271,10 @@ func (s *IntegrationTestSuite) fundCommunityPool(c *chain.Chain) {
 			Container:    s.valResources[c.ChainMeta.ID][i].Container.ID,
 			User:         "root",
 			Cmd: []string{
-				"/usr/bin/evmosd",
+				"/usr/bin/astrad",
 				"--home",
-				"/evmos/.evmosd",
-				"tx", "distribution", "fund-community-pool", "93590289356801768542679aevmos", "--from=val", fmt.Sprintf("--chain-id=%s", c.ChainMeta.ID), "-b=block", "--yes", "--keyring-backend=test",
+				"/astra/.astrad",
+				"tx", "distribution", "fund-community-pool", "93590289356801768542679aastra", "--from=val", fmt.Sprintf("--chain-id=%s", c.ChainMeta.ID), "-b=block", "--yes", "--keyring-backend=test",
 			},
 		})
 		s.Require().NoError(err)
@@ -316,9 +316,9 @@ func (s *IntegrationTestSuite) chainStatus(containerId string) (int, []byte) {
 		Container:    containerId,
 		User:         "root",
 		Cmd: []string{
-			"/usr/bin/evmosd",
+			"/usr/bin/astrad",
 			"--home",
-			"/evmos/.evmosd",
+			"/astra/.astrad",
 			"q",
 			"block",
 		},
@@ -362,13 +362,13 @@ func (s *IntegrationTestSuite) migrateGenesis(containerId string) []byte {
 		Container:    containerId,
 		User:         "root",
 		Cmd: []string{
-			"/usr/bin/evmosd",
+			"/usr/bin/astrad",
 			"--home",
-			"/evmos/.evmosd",
+			"/astra/.astrad",
 			"migrate",
 			"v8",
-			"/evmos/.evmosd/config/genesis.json",
-			"--chain-id=evmos_9001-1",
+			"/astra/.astrad/config/genesis.json",
+			"--chain-id=astra_11115-1",
 		},
 	})
 	s.Require().NoError(err)
