@@ -191,7 +191,7 @@ func (s *IntegrationTestSuite) configureChain(chainId string) {
 	s.initResource, err = s.dkrPool.RunWithOptions(
 		&dockertest.RunOptions{
 			Name:       fmt.Sprintf("%s", chainId),
-			Repository: "evmos-e2e-chain-init",
+			Repository: "astra-e2e-chain-init",
 			Tag:        "debug",
 			NetworkID:  s.dkrNet.Network.ID,
 			Cmd: []string{

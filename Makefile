@@ -185,7 +185,7 @@ docker-build-debug:
 	@docker build -t astra:debug --build-arg BASE_IMG_TAG=debug -f Dockerfile .
 
 docker-build-e2e-chain-init:
-	@docker build -t evmos-e2e-chain-init:debug -f tests/e2e/chain_init/Dockerfile .
+	@docker build -t astra-e2e-chain-init:debug -f tests/e2e/chain_init/Dockerfile .
 
 
 .PHONY: distclean clean build-all
@@ -338,16 +338,20 @@ build-docs-versioned:
 ###                           Tests & Simulation                            ###
 ###############################################################################
 
+
 test: test-unit
 test-all: test-unit test-race
-PACKAGES_UNIT=$(shell go list ./...)
+PACKAGES_UNIT=$(shell go list ./...  | grep -v /tests/)
 TEST_PACKAGES=./...
-TEST_TARGETS := test-unit test-unit-cover test-race
+TEST_TARGETS := test-unit test-unit-cover test-race test-e2e
 
 # Test runs-specific rules. To add a new test target, just add
 # a new rule, customise ARGS or TEST_PACKAGES ad libitum, and
 # append the new rule to the TEST_TARGETS list.
 test-unit: ARGS=-timeout=10m -race
+test-unit: TEST_PACKAGES=$(PACKAGES_UNIT)
+
+
 test-unit: TEST_PACKAGES=$(PACKAGES_UNIT)
 
 test-race: ARGS=-race
@@ -356,6 +360,9 @@ $(TEST_TARGETS): run-tests
 
 test-unit-cover: ARGS=-timeout=10m -race -coverprofile=coverage.txt -covermode=atomic
 test-unit-cover: TEST_PACKAGES=$(PACKAGES_UNIT)
+
+
+test-e2e: TEST_PACKAGES=$(shell go list ./... | grep /tests/)
 
 run-tests:
 ifneq (,$(shell which tparse 2>/dev/null))
